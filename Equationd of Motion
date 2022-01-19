@@ -1,0 +1,129 @@
+syms theta2 theta31 theta32 theta33 theta4 L5 L6
+% first relations for theta
+theta02=57.45952; tehta031=16.50504; theta032=95.41755; theta033=117.59253; theta04=76.7543; L2=60; L31=50; L32=130; L33=130; L4=130; L05=180; L06=191.32722;
+theta2=57.45952:2.864789:630.41732;
+Thetas=zeros(8,201);
+L=zeros(6,201);
+t=zeros(1,201);
+M=zeros(2,201);
+XB=zeros(1,201);YB=zeros(1,201);XC=zeros(1,201);YC=zeros(1,201);XD=zeros(1,201);YD=zeros(1,201);XE=zeros(1,201);YE=zeros(1,201);VxB=zeros(1,201);VyB=zeros(1,201);VxC=zeros(1,201);VyC=zeros(1,201);VD=zeros(1,201);VE=zeros(1,201);VabsC=zeros(1,201);VabsD=zeros(1,201);VabsE=zeros(1,201);AxB=zeros(1,201);AyB=zeros(1,201);AxC=zeros(1,201);AyC=zeros(1,201);AabsC=zeros(1,201);AyD=zeros(1,201);AabsD=zeros(1,201);AyE=zeros(1,201);AabsE=zeros(1,201);AGx2=zeros(1,201);AGy2=zeros(1,201);AGx3=zeros(1,201);AGy3=zeros(1,201);AGx4=zeros(1,201);AGy4=zeros(1,201);FBx=zeros(1,201);FBy=zeros(1,201);FCx=zeros(1,201);FCy=zeros(1,201);FDx=zeros(1,201);FDy=zeros(1,201);FEx=zeros(1,201);FEy=zeros(1,201);FOx=zeros(1,201);FOy=zeros(1,201);T=zeros(1,201);
+for n=1:201
+    
+    % trigonometric 6equations-system for finding member's Theta
+    F=@(x)[60*cosd(theta2(n))+130*cosd(x(2))-20
+           60*sind(theta2(n))+130*sind(x(2))-x(5)
+           130*cosd(x(3))-130*cosd(x(2))+50*cosd(x(1))
+           130*sind(x(3))-130*sind(x(2))+50*sind(x(1))
+           60*cosd(theta2(n))+50*cosd(x(1))+130*cosd(x(4))-110
+           60*sind(theta2(n))+50*sind(x(1))+130*sind(x(4))-x(6)];
+          x0=[92,8,112,78,180,110];
+          x=fsolve(F,x0);
+          
+    % placing unknowns solution on the Theta matrix and Length Matrix
+    Thetas(1,n)=x(1);
+    Thetas(2,n)=x(2);
+    Thetas(3,n)=x(3);
+    Thetas(4,n)=x(4);
+    L(1,n)=x(5);
+    L(2,n)=x(6);
+    
+    % defining carthesian coordinates for different nodes
+    XB(n)=60*cosd(theta2(n));YB(n)=60*sind(theta2(n));
+    XC(n)=50*cosd(Thetas(1,n))+XB(n);YC(n)=50*sind(Thetas(1,n))+YB(n);
+    XD(n)=20;YD(n)=L(1,n);
+    XE(n)=110;YE(n)=L(2,n);
+    
+    % trigonometric 4equations-system for finding member's angular or linea velocity
+    G=@(y)[60*cosd(theta2(n))+130*y(1)*cosd(Thetas(2,n))-y(3)
+           60*sind(theta2(n))+130*y(1)*sind(Thetas(2,n))
+           60*cosd(theta2(n))+50*y(1)*cosd(Thetas(1,n))+130*y(2)*cosd(Thetas(4,n))-y(4)
+           60*sind(theta2(n))+50*y(1)*sind(Thetas(1,n))+130*y(2)*sind(Thetas(4,n))];
+           y0=[0,0,3,4];
+           y=fsolve(G,y0);
+           
+    % placing unknowns solution on the Theta matrix and Length Matrix
+    Thetas(5,n)=y(1);
+    Thetas(6,n)=y(2);
+    L(3,n)=y(3);
+    L(4,n)=y(4);
+    
+    % defining Velocity for different nodes
+    VxB(n)=-60*sind(theta2(n)); VyB(n)=60*cosd(theta2(n));
+    VxC(n)=-50*Thetas(5,n)*sind(Thetas(1,n))+VxB(n); VyC(n)=50*Thetas(5,n)*cosd(Thetas(1,n))+VyB(n);VabsC(n)=((VxC(n))^2+(VyC(n))^2)^0.5;
+    VD(n)=L(3,n);VabsD(n)=(((L(3,n))^2)^0.5);
+    VE(n)=L(4,n);VabsE(n)=(((L(4,n))^2)^0.5);
+
+    % trigonometric 4equations-system for finding member's angular or linear acceleration
+    H=@(z)[-60*sind(theta2(n))+130*z(1)*cosd(Thetas(2,n))-130*((Thetas(5,n))^2)*sind(Thetas(2,n))-z(3)
+           -60*cosd(theta2(n))-130*z(1)*sind(Thetas(2,n))-130*((Thetas(5,n))^2)*cosd(Thetas(2,n))
+           -60*sind(theta2(n))+50*z(1)*cosd(Thetas(1,n))-50*((Thetas(5,n))^2)*sind(Thetas(1,n))+130*z(2)*cosd(Thetas(4,n))-130*((Thetas(6,n))^2)*sind(Thetas(4,n))-z(4)
+           -60*cosd(theta2(n))-50*z(1)*sind(Thetas(1,n))-50*((Thetas(5,n))^2)*cosd(Thetas(1,n))-130*z(2)*sind(Thetas(4,n))-130*((Thetas(6,n))^2)*cosd(Thetas(4,n))];
+           z0=[3,4,7,3];
+           z=fsolve(H,z0);
+       
+       % placing unknowns solution on the Theta matrix and Length Matrix
+       Thetas(7,n)=z(1);
+       Thetas(8,n)=z(2);
+       L(5,n)=z(3);
+       L(6,n)=z(4);
+       
+       % defining Acceleration for different nodes
+       AxB(n)=-60*cosd(theta2(n));AyB(n)=-60*sind(theta2(n));
+       AxC(n)=-50*Thetas(7,n)*sind(Thetas(1,n))-50*(Thetas(5,n)^2)*cosd(Thetas(1,n))+AxB(n);AyC(n)=50*Thetas(7,n)*cosd(Thetas(1,n))-50*((Thetas(5,n))^2)*sind(Thetas(1,n))+AyB(n);AabsC(n)=((AxC(n))^2+(AyC(n))^2)^0.5;
+       AyD(n)=L(5,n);AabsD(n)=((AyD(n))^2)^0.5;
+       AyE(n)=L(6,n);AabsE(n)=((AyE(n))^2)^0.5;
+       
+       % Forces equations
+       AGx2(n)=0.5*(0.000001)*AxB(n);AGy2(n)=0.5*(0.000001)*AyB(n);
+       AGx3(n)=-0.0493288*(Thetas(7,n))*sind(Thetas(1,n)+59.54888)-0.0493288*((Thetas(5,n))^2)*cosd(Thetas(1,n)+59.54888)+AxB(n);AGy3(n)=0.0493288*(Thetas(7,n))*cosd(Thetas(1,n)+59.54888)-0.0493288*((Thetas(5,n))^2)*sind(Thetas(1,n)+59.54888)+AyB(n);
+       AGx4(n)=AxC(n)-0.065*Thetas(8,n)*cosd(Thetas(4,n))-0.065*((Thetas(6,n))^2)*cosd(Thetas(4,n));AGy4(n)=AyC(n)+0.065*Thetas(8,n)*cosd(Thetas(4,n))-0.065*((Thetas(6,n))^2)*sind(Thetas(4,n));
+       I=@(w)[w(1)+w(3)-(0.06)*AGx2(n)
+              w(2)+w(4)-(0.06)*AGy2(n)
+              0.03*w(3)*sind(theta2(n))-0.03*w(4)*cosd(theta2(n))-0.03*w(1)*sind(theta2(n))+0.03*w(2)*cosd(theta2(n))-w(5)
+              -w(1)+w(6)+w(8)-0.003189*AGx3(n)
+              -w(2)+w(7)+w(9)-0.003189*AGy3(n)
+              -0.0493288*w(1)*sind(Thetas(1,n)+59.54888)+0.0493288*w(2)*sind(Thetas(1,n)+149.54888)+w(6)*0.0493288*sind(59.54888-Thetas(1,n))+w(7)*0.0493288*sind(149.54888-Thetas(1,n))-w(8)*2*0.0425245*sind(Thetas(3,n)-11.0875)-w(9)*2*0.0425245*sind(Thetas(3,n)-101.0875)-Thetas(7,n)*0.0000029944
+              w(10)-w(6)-0.13*AGx4(n)
+              w(11)-w(7)-0.13*AGy4(n)
+              -0.065*sind(Thetas(4,n))*w(6)+0.065*w(7)*cosd(Thetas(4,n))-0.065*w(10)*sind(Thetas(4,n))+0.065*w(11)*cosd(Thetas(4,n))-(1/12)*((0.13)^3)*Thetas(8,n)
+              -w(9)-100-0.2*w(8)*VD(n)/((VD(n)^2)^0.5)-0.3*AyD(n)
+              -w(11)-150-w(10)*0.2*VE(n)/((VE(n)^2)^0.5)-0.3*AyE(n)];
+               w0=[100,100,210,32,66,167,73,32,265,209,200];
+               w=fsolve(I,w0);
+               FBx(n)=w(1);
+               FBy(n)=w(2);
+               FOx(n)=w(3);
+               FOy(n)=w(4);
+               T(n)=w(5);
+               FCx(n)=w(6);
+               FCy(n)=w(7);
+               FDx(n)=w(8);
+               FDy(n)=w(9);
+               FEx(n)=w(10);
+               FEy(n)=w(11);
+          
+              
+    h1=plot([0,XB(n)],[0,YB(n)]);
+    hold on
+    h2=plot([XB(n),XC(n)],[YB(n),YC(n)]);
+    hold on
+    h3=plot([XB(n),XD(n)],[YB(n),YD(n)]);
+    hold on
+    h4=plot([XC(n),XD(n)],[YC(n),YD(n)]);
+    hold on
+    h5=plot([XC(n),XE(n)],[YC(n),YE(n)]);
+    hold on
+    h6=plot([20,XD(n)],[180,YD(n)]);
+    hold on
+    h7=plot([110,XE(n)],[191,YE(n)]);
+     drawnow
+     delete([h1 h2 h3 h4 h5 h6 h7])
+     t(n)=0.05*(n-1);
+end
+% plot(t,VabsC)
+% plot(t,VabsE)
+% plot(t,VabsD)
+% plot(t,AabsC)
+% plot(t,AabsD)
+% plot(t,AabsE)
+% plot(t,T)
